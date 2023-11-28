@@ -17,24 +17,26 @@ struct ContentView: View {
         NavigationView {
             List(pets, selection: $selectedRows) { pet in
                 MultiSelectRow(pet: pet, selectedItems: $selectedRows)
-                }
-                .navigationBarItems(trailing: Button(action: {
+            }
+            .toolbar {
+                Button(action: {
                     // code for the action
                     isEditing.toggle()
-                    if !self.isEditing {
+                    if isEditing {
                         // when a user taps "DONE"
-                        print("Items selected: \(self.selectedRows)")
+                        print("Items selected: \(selectedRows)")
                     }
                 }, label: {
-                    if self.isEditing {
+                    if isEditing {
                         Text("Done").foregroundStyle(.red)
                     } else {
                         Text("Edit").foregroundStyle(.blue)
                     }
-                }))
-                .environment(\.editMode, .constant(self.isEditing ? EditMode.active : EditMode.inactive))
-                .animation(.spring, value: UUID())
-                .navigationBarTitle(Text("Selected \(selectedRows.count) rows"))
+                })
+            }
+            .environment(\.editMode, .constant(isEditing ? EditMode.active : EditMode.inactive))
+            .animation(.spring, value: UUID())
+            .navigationBarTitle(Text("Selected \(selectedRows.count) rows"))
         }
     }
 }
