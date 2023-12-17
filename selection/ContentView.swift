@@ -14,17 +14,22 @@ struct ContentView: View {
     @State private var selectedRows = Set<String>()
     @State private var isBeingEdited = false
     @State private var buttonName = "Done"
+    @State private var isDisabled = true
+    @State private var isTrash = false
 
     var body: some View {
         NavigationView {
             List(selection: $selectedRows) {
                 ForEach(words.sorted(by: { $0.leftPart < $1.leftPart }), id: \.id) { word in
-                    MultiSelectRow(word: word, blurRadius: 0, selectedItems: $selectedRows)
+                    MultiSelectRow(word: word, blurRadius: 0, isBeingEdited: isBeingEdited, isTrash: isTrash, selectedItems: $selectedRows)
+                        .selectionDisabled(isDisabled)
                 }
             }
             .toolbar {
                 if !isBeingEdited {
                     Button {
+                        isTrash = true
+                        isDisabled = false
                         buttonName = "Delete"
                         isBeingEdited = true
                     } label: {
@@ -34,6 +39,7 @@ struct ContentView: View {
 
                 if !isBeingEdited {
                     Button {
+                        isDisabled = false
                         buttonName = "Move"
                         isBeingEdited = true
                     } label: {
@@ -43,8 +49,10 @@ struct ContentView: View {
 
                 if isBeingEdited {
                     Button {
+                        isTrash = false
                         isBeingEdited = false
                         printSelectedWords()
+                        isDisabled = true
                     } label: {
                         let color: Color = (buttonName == "Delete") ? .red : .blue
                         Text(buttonName)
@@ -52,6 +60,7 @@ struct ContentView: View {
                     }
                 }
             }
+            
             .environment(\.editMode, .constant(isBeingEdited ? EditMode.active : EditMode.inactive))
             .animation(.spring, value: isBeingEdited)
             .navigationBarTitle(Text("Selected \(selectedRows.count) rows"))
