@@ -20,11 +20,6 @@ struct MultiSelectRow: View {
             Text(pet.name)
                 .font(.title)
                 .fontWeight(.bold)
-            Spacer()
-            if isSelected {
-                Image(systemName: "checkmark")
-                    .foregroundStyle(.blue)
-            }
         }
     }
 }
