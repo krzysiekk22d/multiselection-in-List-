@@ -8,18 +8,30 @@
 import SwiftUI
 
 struct MultiSelectRow: View {
-    
-    var pet: Pet
-    @Binding var selectedItems: Set<UUID>
-    var isSelected: Bool {
-        selectedItems.contains(pet.id)
-    }
+    var word: Word
+    var blurRadius: CGFloat
+    @Binding var selectedItems: Set<String>
     
     var body: some View {
         HStack {
-            Text(pet.name)
-                .font(.title)
-                .fontWeight(.bold)
+            Text(word.leftPart)
+                .blur(radius: blurRadius)
+            Spacer()
+            Text(word.rightPart)
+                .foregroundStyle(Color.green)
+                .italic()
+                .blur(radius: blurRadius)
+        }
+        .onTapGesture {
+            toggleSelection()
+        }
+    }
+    
+    private func toggleSelection() {
+        if selectedItems.contains(word.id) {
+            selectedItems.remove(word.id)
+        } else {
+            selectedItems.insert(word.id)
         }
     }
 }

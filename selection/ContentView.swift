@@ -8,49 +8,43 @@
 import SwiftUI
 
 struct ContentView: View {
-    var pets = Pet.dummyData()
-    
-    @State private var selectedRows = Set<UUID>()
-    @State private var isEditing = false
+    @State private var words: [Word] = [
+            Word(id: "a", leftPart: "aa", rightPart: "aaa"), Word(id: "b", leftPart: "bb", rightPart: "bbb"), Word(id: "c", leftPart: "cc", rightPart: "ccc"), Word(id: "d", leftPart: "dd", rightPart: "ddd"), Word(id: "e", leftPart: "ee", rightPart: "eee"), Word(id: "f", leftPart: "ff", rightPart: "fff"), Word(id: "g", leftPart: "gg", rightPart: "ggg"), Word(id: "h", leftPart: "hh", rightPart: "hhh"), Word(id: "i", leftPart: "ii", rightPart: "iii"), Word(id: "j", leftPart: "jj", rightPart: "jjj"), Word(id: "k", leftPart: "kk", rightPart: "kkk"), Word(id: "l", leftPart: "ll", rightPart: "lll"), Word(id: "m", leftPart: "mm", rightPart: "mmm")]
+
+    @State private var selectedRows = Set<String>()
+    @State private var isBeingEdited = false
     @State private var buttonName = "Done"
-    
+
     var body: some View {
         NavigationView {
-            List(pets, selection: $selectedRows) { pet in
-                MultiSelectRow(pet: pet, selectedItems: $selectedRows)
+            List(selection: $selectedRows) {
+                ForEach(words.sorted(by: { $0.leftPart < $1.leftPart }), id: \.id) { word in
+                    MultiSelectRow(word: word, blurRadius: 0, selectedItems: $selectedRows)
+                }
             }
             .toolbar {
-                
-                if !isEditing {
+                if !isBeingEdited {
                     Button {
                         buttonName = "Delete"
-                        isEditing = true
+                        isBeingEdited = true
                     } label: {
                         Text("Delete").foregroundStyle(.blue)
                     }
                 }
-                
-                if !isEditing {
+
+                if !isBeingEdited {
                     Button {
                         buttonName = "Move"
-                        isEditing = true
+                        isBeingEdited = true
                     } label: {
                         Text("Move").foregroundStyle(.blue)
                     }
                 }
-                
-                if !isEditing {
+
+                if isBeingEdited {
                     Button {
-                        buttonName = "Share"
-                        isEditing = true
-                    } label: {
-                        Text("Share").foregroundStyle(.blue)
-                    }
-                }
-                
-                if isEditing {
-                    Button {
-                        isEditing = false
+                        isBeingEdited = false
+                        printSelectedWords()
                     } label: {
                         let color: Color = (buttonName == "Delete") ? .red : .blue
                         Text(buttonName)
@@ -58,21 +52,15 @@ struct ContentView: View {
                     }
                 }
             }
-            .environment(\.editMode, .constant(isEditing ? EditMode.active : EditMode.inactive))
-            .animation(.spring, value: isEditing) // Zaktualizowano wartość animacji
+            .environment(\.editMode, .constant(isBeingEdited ? EditMode.active : EditMode.inactive))
+            .animation(.spring, value: isBeingEdited)
             .navigationBarTitle(Text("Selected \(selectedRows.count) rows"))
-            .onChange(of: isEditing) { _, _ in
-                if !isEditing {
-                    // when a user taps "DONE"
-                    printSelectedPets()
-                }
-            }
         }
     }
-    
-    private func printSelectedPets() {
-        let selectedPetNames = pets.filter { selectedRows.contains($0.id) }.map { $0.name }
-        print("Items selected: \(selectedPetNames)")
+
+    private func printSelectedWords() {
+        let selectedWordIDs = Array(selectedRows)
+        print("Items selected: \(selectedWordIDs)")
     }
 }
 
