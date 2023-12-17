@@ -10,8 +10,8 @@ import SwiftUI
 struct ContentView: View {
     var pets = Pet.dummyData()
     
-    @State var selectedRows = Set<UUID>()
-    @State var isEditing = false
+    @State private var selectedRows = Set<UUID>()
+    @State private var isEditing = false
     
     var body: some View {
         NavigationView {
@@ -22,10 +22,6 @@ struct ContentView: View {
                 Button(action: {
                     // code for the action
                     isEditing.toggle()
-                    if isEditing {
-                        // when a user taps "DONE"
-                        print("Items selected: \(selectedRows)")
-                    }
                 }, label: {
                     if isEditing {
                         Text("Done").foregroundStyle(.red)
@@ -35,9 +31,20 @@ struct ContentView: View {
                 })
             }
             .environment(\.editMode, .constant(isEditing ? EditMode.active : EditMode.inactive))
-            .animation(.spring, value: UUID())
+            .animation(.spring, value: isEditing) // Zaktualizowano wartość animacji
             .navigationBarTitle(Text("Selected \(selectedRows.count) rows"))
+            .onChange(of: isEditing) { _, _ in
+                if !isEditing {
+                    // when a user taps "DONE"
+                    printSelectedPets()
+                }
+            }
         }
+    }
+    
+    private func printSelectedPets() {
+        let selectedPetNames = pets.filter { selectedRows.contains($0.id) }.map { $0.name }
+        print("Items selected: \(selectedPetNames)")
     }
 }
 
