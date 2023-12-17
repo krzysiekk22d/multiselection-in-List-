@@ -12,6 +12,7 @@ struct ContentView: View {
     
     @State private var selectedRows = Set<UUID>()
     @State private var isEditing = false
+    @State private var buttonName = "Done"
     
     var body: some View {
         NavigationView {
@@ -19,16 +20,43 @@ struct ContentView: View {
                 MultiSelectRow(pet: pet, selectedItems: $selectedRows)
             }
             .toolbar {
-                Button(action: {
-                    // code for the action
-                    isEditing.toggle()
-                }, label: {
-                    if isEditing {
-                        Text("Done").foregroundStyle(.red)
-                    } else {
-                        Text("Edit").foregroundStyle(.blue)
+                
+                if !isEditing {
+                    Button {
+                        buttonName = "Delete"
+                        isEditing = true
+                    } label: {
+                        Text("Delete").foregroundStyle(.blue)
                     }
-                })
+                }
+                
+                if !isEditing {
+                    Button {
+                        buttonName = "Move"
+                        isEditing = true
+                    } label: {
+                        Text("Move").foregroundStyle(.blue)
+                    }
+                }
+                
+                if !isEditing {
+                    Button {
+                        buttonName = "Share"
+                        isEditing = true
+                    } label: {
+                        Text("Share").foregroundStyle(.blue)
+                    }
+                }
+                
+                if isEditing {
+                    Button {
+                        isEditing = false
+                    } label: {
+                        let color: Color = (buttonName == "Delete") ? .red : .blue
+                        Text(buttonName)
+                            .foregroundStyle(color)
+                    }
+                }
             }
             .environment(\.editMode, .constant(isEditing ? EditMode.active : EditMode.inactive))
             .animation(.spring, value: isEditing) // Zaktualizowano wartość animacji
